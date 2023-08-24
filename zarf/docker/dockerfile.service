@@ -1,0 +1,33 @@
+# Build the Go Binary.
+FROM golang:1.20 as build_sales-api
+ENV CGO_ENABLED 0
+ARG BUILD_REF
+
+# Copy the source code into the container.
+COPY . /service
+
+# Build the service binary.
+WORKDIR /service/app/services/tasks-api
+RUN go build -ldflags "-X main.build=${BUILD_REF}"
+
+# Build the admin binary.
+WORKDIR /service/app/tooling/admin
+RUN go build
+
+
+# Run the Go Binary in Alpine.
+FROM alpine:3.18
+ARG BUILD_DATE
+ARG BUILD_REF
+RUN addgroup -g 1000 -S tasks && \
+    adduser -u 1000 -h /service -G tasks -S tasks
+COPY --from=build_sales-api --chown=tasks:tasks /service/app/services/tasks-api/tasks-api /service/tasks-api
+COPY --from=build_sales-api --chown=tasks:tasks /service/app/tooling/admin/admin /service/admin
+WORKDIR /service
+USER tasks
+CMD ["./tasks-api"]
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="tasks-api" \
+      org.opencontainers.image.source="https://github.com/Bruno-10/tasks/app/services/tasks-api" \
+      org.opencontainers.image.revision="${BUILD_REF}" \
