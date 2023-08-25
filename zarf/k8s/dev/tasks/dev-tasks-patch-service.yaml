@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasks-api
+  namespace: tasks-system
+
+spec:
+  selector:
+    app: tasks
+
+  type: ClusterIP
+
+  ports:
+    - name: tasks-api
+      port: 3000
+      targetPort: tasks-api
+    - name: tasks-api-debug
+      port: 4000
+      targetPort: tasks-api-debug

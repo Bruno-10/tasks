@@ -5,6 +5,7 @@ CREATE TABLE tasks (
 	name          TEXT        NOT NULL,
 	description   TEXT        NOT NULL,
 	type          TEXT        NOT NULL,
+  label         TEXT        NOT NULL,
 	due_date      TIMESTAMP   NOT NULL,
 	date_created  TIMESTAMP   NOT NULL,
 	date_updated  TIMESTAMP   NOT NULL,

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../../base/tasks/
+patches:
+- path: ./dev-tasks-patch-deploy.yaml
+- path: ./dev-tasks-patch-service.yaml
+images:
+- name: service-image
+  newName: bruno-10/tasks/tasks-api
+  newTag: 0.0.1
+- name: task-image
+  newName: bruno-10/tasks/tasks-api
+  newTag: 0.0.1
