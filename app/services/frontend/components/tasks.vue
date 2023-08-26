@@ -1,5 +1,5 @@
 <template>
-  <v-list style="width: 100%">
+  <v-list>
     <v-list-item-group v-if="tasks.length">
       <v-list-item v-for="task in tasks" :key="task.ID" class="text-start my-2">
         <template>
@@ -7,6 +7,9 @@
             <v-list-item-title>
               <div>
                 {{ task.name }}
+                <v-chip class="ml-4 my-2 label" small label>
+                  {{ task.type }}
+                </v-chip>
                 <v-chip
                   class="ml-4 my-2 label"
                   :color="taskLabelColors(task.label)"
@@ -29,8 +32,8 @@
         <template>
           <v-list-item-content>
             <v-list-item-title>
-              <strong> No pending tasks! </strong></v-list-item-title
-            >
+              <strong> No pending tasks! </strong>
+            </v-list-item-title>
           </v-list-item-content>
         </template>
       </v-list-item>
@@ -40,32 +43,20 @@
 <script>
 const taskLabelColors = {
   Urgent: 'red',
-  Health: 'green',
-  Personal: 'white',
-  Other: 'grey',
-  Work: 'lightblue',
+  'Can be postponed': 'green',
+  'Not important': 'grey',
 }
 export default {
   name: 'Tasks',
-  data: () => ({
-    tasks: [],
-  }),
-  mounted() {
-    this.getTasks()
+  props: {
+    tasks: {
+      type: Array,
+      default: () => [],
+    },
   },
   methods: {
     taskLabelColors(label) {
       return taskLabelColors[label]
-    },
-    getTasks() {
-      this.$axios
-        .get(`http://tasks-api.tasks-system.svc.cluster.local:3000/tasks`)
-        .then((res) => {
-          this.tasks = res.data.items
-        })
-        .catch((err) => {
-          throw new Error(err)
-        })
     },
   },
 }

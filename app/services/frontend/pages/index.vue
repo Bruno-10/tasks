@@ -2,15 +2,16 @@
   <v-card
     justify="center"
     align="center"
-    min-height="calc(100vh - 24px)"
+    max-height="calc(100vh - 24px)"
+    style="height: 100vh; overflow-y: hidden"
     class="d-flex flex-column"
   >
     <v-card-title class="justify-space-between"> Tasks </v-card-title>
-    <v-card-text style="height: 100%; display: flex; flex: 1 1 auto">
-      <lazy-tasks />
+    <v-card-text style="overflow-y: scroll; flex: 1 1 auto">
+      <lazy-tasks :tasks="tasks" />
     </v-card-text>
     <v-card-actions>
-      <lazy-add-task />
+      <lazy-add-task @added="getTasks()" />
     </v-card-actions>
   </v-card>
 </template>
@@ -20,19 +21,23 @@ export default {
   name: 'IndexPage',
   data() {
     return {
-      tasks: [
-        {
-          ID: 'asdasd',
-          name: 'Test',
-          description:
-            'Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint cillum sint consectetur cupidatat.',
-          type: 'Work',
-          label: 'Urgent',
-          checked: false,
-          dueDate: new Date(),
-        },
-      ],
+      tasks: [],
     }
+  },
+  mounted() {
+    this.getTasks()
+  },
+  methods: {
+    getTasks() {
+      this.$axios
+        .get(`http://tasks-api.tasks-system.svc.cluster.local:3000/tasks`)
+        .then((res) => {
+          this.tasks = res.data.items
+        })
+        .catch((err) => {
+          throw new Error(err)
+        })
+    },
   },
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panels>
+  <v-expansion-panels v-model="menu">
     <v-expansion-panel>
       <v-expansion-panel-header> Add task </v-expansion-panel-header>
       <v-expansion-panel-content>
@@ -24,7 +24,6 @@
                 :rules="[requiredRule]"
               />
               <lazy-ui-input-date-picker
-                :value="form.dueDate"
                 label="Due Date"
                 :min="today"
                 @change="form.dueDate = $event"
@@ -53,22 +52,18 @@
 <script>
 import differenceInDays from 'date-fns/differenceInDays'
 import utils from '~/utils'
-
 export default {
   name: 'AddTask',
   data: () => ({
-    dialog: false,
+    menu: undefined,
     formValid: true,
     form: {
-      name: 'Test',
-      type: 'Work',
-      description: 'tasdd',
+      name: '',
+      type: '',
+      description: '',
       dueDate: utils.today(),
     },
   }),
-  mounted() {
-    this.addTask()
-  },
   computed: {
     today() {
       return utils.today()
@@ -87,56 +82,53 @@ export default {
       const workCondition =
         this.form.name.includes('PLO') || this.form.name.includes('GJL')
       const difference = differenceInDays(todayFormated, pickedDate)
+      const type = this.form.type.toLowerCase()
       if (
         differenceInDays(pickedDate, new Date(this.tomorrow)) < 1 &&
-        this.form.type.includes('Work')
+        type.includes('work')
       ) {
         return 'Urgent'
       }
 
-      if (difference <= 7 && this.form.type.includes('Personal')) {
+      if (difference <= 7 && type.includes('personal')) {
         return 'Can be postponed'
       }
 
-      if (difference <= 5 && this.form.type.includes('Personal')) {
+      if (difference <= 5 && type.includes('personal')) {
         return 'Can be postponed'
       }
 
-      if (
-        difference <= 31 &&
-        this.form.type.includes('Work') &&
-        workCondition
-      ) {
+      if (difference <= 31 && type.includes('work') && workCondition) {
         return 'Can be postponed'
       }
 
       return 'Not important'
     },
     addTask() {
-      // if ('form' in this.$refs && this.$refs.form.validate()) {
-      const label = this.getTaskLabel()
+      if ('form' in this.$refs && this.$refs.form.validate()) {
+        const label = this.getTaskLabel()
 
-      const data = {
-        ...this.form,
-        dueDate: `${this.form.dueDate}T00:00:00Z`,
-        label,
+        const data = {
+          ...this.form,
+          dueDate: `${this.form.dueDate}T00:00:00Z`,
+          label,
+        }
+
+        this.$axios({
+          url: 'http://tasks-api.tasks-system.svc.cluster.local:3000/tasks',
+          data,
+          method: 'POST',
+        })
+          .then((_res) => {
+            this.menu = false
+            this.$refs.form.reset()
+            this.$emit('added')
+          })
+          .catch((err) => {
+            throw new Error(err)
+          })
       }
-
-      console.log(data)
-
-      this.$axios({
-        url: 'http://tasks-api.tasks-system.svc.cluster.local:3000/tasks',
-        data,
-        method: 'POST',
-      })
-        .then((_res) => {
-          this.$emit('added')
-        })
-        .catch((err) => {
-          throw new Error(err)
-        })
     },
   },
-  // },
 }
 </script>

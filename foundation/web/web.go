@@ -77,7 +77,9 @@ func (a *App) EnableCORS(mw Middleware) {
 		return Respond(ctx, w, "OK", http.StatusOK)
 	}
 	handler = wrapMiddleware(a.mw, handler)
-
+	a.mux.OptionsHandler = func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+		handler(r.Context(), w, r)
+	}
 }
 
 // HandleNoMiddleware sets a handler function for a given HTTP method and path pair
