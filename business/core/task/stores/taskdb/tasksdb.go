@@ -34,11 +34,12 @@ func NewStore(log *zap.SugaredLogger, db *sqlx.DB) *Store {
 
 // Create inserts a new task into the database.
 func (s *Store) Create(ctx context.Context, tsk task.Task) error {
+	s.log.Infoln("I'm here")
 	const q = `
 	INSERT INTO tasks
 		(task_id, name, description, type, due_date, label, date_created, date_updated)
 	VALUES
-		(:task_id, :name, description, type, due_date, :label, :date_created, :date_updated)`
+		(:task_id, :name, :description, :type, :due_date, :label, :date_created, :date_updated)`
 
 	if err := database.NamedExecContext(ctx, s.log, s.db, q, toDBTask(tsk)); err != nil {
 		if errors.Is(err, database.ErrDBDuplicatedEntry) {

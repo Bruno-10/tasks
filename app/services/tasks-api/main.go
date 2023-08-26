@@ -144,7 +144,7 @@ func run(log *zap.SugaredLogger) error {
 		Shutdown: shutdown,
 		Log:      log,
 		DB:       db,
-	})
+	}, handlers.WithCORS("*"))
 
 	api := http.Server{
 		Addr:         cfg.Web.APIHost,

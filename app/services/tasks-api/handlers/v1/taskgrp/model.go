@@ -10,14 +10,14 @@ import (
 
 // AppTask represents information about an individual task.
 type AppTask struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Type        string `json:"type"`
-	Label       string `json:"label"`
-	DueDate     string `json:"dueDate"`
-	DateCreated string `json:"dateCreated"`
-	DateUpdated string `json:"dateUpdated"`
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Type        string    `json:"type"`
+	Label       string    `json:"label"`
+	DueDate     time.Time `json:"dueDate"`
+	DateCreated string    `json:"dateCreated"`
+	DateUpdated string    `json:"dateUpdated"`
 }
 
 func toAppTask(tsk task.Task) AppTask {
@@ -28,7 +28,7 @@ func toAppTask(tsk task.Task) AppTask {
 		Description: tsk.Description,
 		Type:        tsk.Type,
 		Label:       tsk.Label,
-		DueDate:     tsk.DueDate.Format(time.RFC3339),
+		DueDate:     tsk.DueDate,
 		DateCreated: tsk.DateCreated.Format(time.RFC3339),
 		DateUpdated: tsk.DateUpdated.Format(time.RFC3339),
 	}
@@ -38,24 +38,20 @@ func toAppTask(tsk task.Task) AppTask {
 
 // AppNewTask contains information needed to create a new task.
 type AppNewTask struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	Type        string `json:"type" validate:"required"`
-	Label       string `json:"label" validate:"required"`
-	DueDate     string `json:"dueDate" validate:"required"`
+	Name        string    `json:"name" validate:"required"`
+	Description string    `json:"description" validate:"required"`
+	Type        string    `json:"type" validate:"required"`
+	Label       string    `json:"label" validate:"required"`
+	DueDate     time.Time `json:"dueDate" validate:"required"`
 }
 
 func toCoreNewTask(app AppNewTask) (task.NewTask, error) {
-	dueDate, err := time.Parse(app.DueDate, time.RFC3339)
-	if err != nil {
-		fmt.Errorf("parsing date: %w", err)
-	}
 	tsk := task.NewTask{
 		Name:        app.Name,
 		Description: app.Description,
 		Type:        app.Type,
 		Label:       app.Label,
-		DueDate:     dueDate,
+		DueDate:     app.DueDate,
 	}
 
 	return tsk, nil

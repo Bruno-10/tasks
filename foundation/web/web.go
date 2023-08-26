@@ -7,10 +7,8 @@ import (
 	"net/http"
 	"os"
 	"syscall"
-	"time"
 
 	"github.com/dimfeld/httptreemux/v5"
-	"github.com/google/uuid"
 )
 
 // A Handler is a type that handles a http request within our own little mini
@@ -21,17 +19,19 @@ type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request) e
 // object for each of our http handlers. Feel free to add any configuration
 // data/logic on this App struct.
 type App struct {
-	*httptreemux.ContextMux
+	mux      *httptreemux.ContextMux
 	shutdown chan os.Signal
 	mw       []Middleware
 }
 
 // NewApp creates an App value that handle a set of routes for the application.
 func NewApp(shutdown chan os.Signal, mw ...Middleware) *App {
+	mux := httptreemux.NewContextMux()
+
 	return &App{
-		ContextMux: httptreemux.NewContextMux(),
-		shutdown:   shutdown,
-		mw:         mw,
+		mux:      mux,
+		shutdown: shutdown,
+		mw:       mw,
 	}
 }
 
@@ -47,25 +47,47 @@ func (a *App) Handle(method string, path string, handler Handler, mw ...Middlewa
 	handler = wrapMiddleware(mw, handler)
 	handler = wrapMiddleware(a.mw, handler)
 
+	a.handle(method, path, handler)
+}
+
+// =============================================================================
+
+// Handle sets a handler function for a given HTTP method and path pair
+// to the application server mux.
+func (a *App) handle(method string, path string, handler Handler) {
 	h := func(w http.ResponseWriter, r *http.Request) {
-
-		v := Values{
-			TraceID: uuid.NewString(),
-			Now:     time.Now().UTC(),
-		}
-		ctx := context.WithValue(r.Context(), key, &v)
-
-		if err := handler(ctx, w, r); err != nil {
+		if err := handler(r.Context(), w, r); err != nil {
 			if validateShutdown(err) {
 				a.SignalShutdown()
 				return
 			}
 		}
-
-		// ANY CODE I WANT
 	}
 
-	a.ContextMux.Handle(method, path, h)
+	a.mux.Handle(method, path, h)
+}
+
+// EnableCORS enables CORS preflight requests to work in the middleware. It
+// prevents the MethodNotAllowedHandler from being called. This must be enabled
+// for the CORS middleware to work.
+func (a *App) EnableCORS(mw Middleware) {
+	a.mw = append(a.mw, mw)
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+		return Respond(ctx, w, "OK", http.StatusOK)
+	}
+	handler = wrapMiddleware(a.mw, handler)
+
+}
+
+// HandleNoMiddleware sets a handler function for a given HTTP method and path pair
+// to the application server mux. Does not include the application middleware.
+func (a *App) HandleNoMiddleware(method string, path string, handler Handler) {
+	a.handle(method, path, handler)
+}
+
+func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	a.mux.ServeHTTP(w, r)
 }
 
 // validateShutdown validates the error for special conditions that do not

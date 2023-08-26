@@ -1,0 +1,65 @@
+@import '/assets/variables';
+
+@mixin ui-input {
+  // Change border radius
+  border-radius: $ui-text-field-border-radius;
+
+  // Change input height
+  .v-input__control > .v-input__slot {
+    min-height: $ui-input-height !important;
+    max-height: $ui-input-height;
+  }
+
+  // Customize label
+  .v-label {
+    color: $theme-light-text-light;
+    font-size: $ui-text-field-label-font-size;
+
+    &--active {
+      color: $theme-light-text-light !important;
+      //transform: translateY(#{$text-field-outlined-label-position-y})
+      //  scale(#{$text-field-outlined-active-label-scale});
+    }
+  }
+
+  //.v-input__control > .v-input__slot > fieldset > legend {
+  //  transform: scale(1.8);
+  //  transform-origin: top left;
+  //}
+
+  // Change border color
+  &.v-input--is-focused fieldset,
+  .v-input__control > .v-input__slot:hover fieldset {
+    border: $ui-input-border;
+  }
+
+  // Change font size
+  input,
+  textarea {
+    font-size: 14px;
+    color: $theme-light-input-text-color !important;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield !important;
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+  }
+  // Change inner icon placement
+  .v-input__append-inner {
+    margin-top: 8px !important;
+  }
+
+  // Change inner icon color
+  .v-input__append-inner .v-icon,
+  .v-input__append-inner .v-icon__component.primary--text {
+    color: $theme-light-input-icon-color !important;
+  }
+
+  &.v-input--is-disabled input {
+    color: $theme-light-text-light !important;
+  }
+}

@@ -3,7 +3,6 @@ package taskgrp
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -28,20 +27,19 @@ func New(task *task.Core) *Handlers {
 // Create adds a new task to the system.
 func (h *Handlers) Create(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	var app AppNewTask
+
 	if err := web.Decode(r, &app); err != nil {
-		return err
+		return v1.NewRequestError(err, http.StatusBadRequest)
 	}
 
 	nc, err := toCoreNewTask(app)
 	if err != nil {
+		fmt.Println(err, "test")
 		return v1.NewRequestError(err, http.StatusBadRequest)
 	}
 
 	tsk, err := h.task.Create(ctx, nc)
 	if err != nil {
-		if errors.Is(err, task.ErrUniqueEmail) {
-			return v1.NewRequestError(err, http.StatusConflict)
-		}
 		return fmt.Errorf("create: tsk[%+v]: %w", tsk, err)
 	}
 

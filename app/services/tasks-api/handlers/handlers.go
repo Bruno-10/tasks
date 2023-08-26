@@ -1,17 +1,26 @@
 package handlers
 
 import (
-	"net/http"
 	"os"
 
-	"github.com/Bruno-10/tasks/app/services/tasks-api/handlers/v1/taskgrp"
-	"github.com/Bruno-10/tasks/business/core/task"
-	"github.com/Bruno-10/tasks/business/core/task/stores/taskdb"
+	v1 "github.com/Bruno-10/tasks/app/services/tasks-api/handlers/v1"
 	"github.com/Bruno-10/tasks/business/web/v1/mid"
 	"github.com/Bruno-10/tasks/foundation/web"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
+
+// Options represent optional parameters.
+type Options struct {
+	corsOrigin string
+}
+
+// WithCORS provides configuration options for CORS.
+func WithCORS(origin string) func(opts *Options) {
+	return func(opts *Options) {
+		opts.corsOrigin = origin
+	}
+}
 
 // APIMuxConfig contains all the mandatory systems required by handlers.
 type APIMuxConfig struct {
@@ -21,16 +30,22 @@ type APIMuxConfig struct {
 }
 
 // APIMux constructs a http.Handler with all application routes defined.
-func APIMux(cfg APIMuxConfig) *web.App {
+func APIMux(cfg APIMuxConfig, options ...func(opts *Options)) *web.App {
+	var opts Options
+	for _, option := range options {
+		option(&opts)
+	}
+
 	app := web.NewApp(cfg.Shutdown, mid.Logger(cfg.Log), mid.Errors(cfg.Log), mid.Metrics(), mid.Panics())
 
-	// -------------------------------------------------------------------------
+	if opts.corsOrigin != "" {
+		app.EnableCORS(mid.Cors(opts.corsOrigin))
+	}
 
-	tskCore := task.NewCore(taskdb.NewStore(cfg.Log, cfg.DB))
-
-	tgh := taskgrp.New(tskCore)
-
-	app.Handle(http.MethodGet, "/tasks", tgh.Query)
+	v1.Routes(app, v1.Config{
+		Log: cfg.Log,
+		DB:  cfg.DB,
+	})
 
 	return app
 }

@@ -1,0 +1,51 @@
+// Text
+$theme-light-text-dark: rgba(12, 70, 107, 1);
+$theme-light-text-light: rgba(12, 70, 107, 0.6);
+$theme-light-text-light-disabled: rgba(12, 70, 107, 0.4);
+$theme-light-text-light-blue: #1f8dd6;
+
+// Colors
+$theme-light-primary-color: linear-gradient(82deg, #24add7 -16%, #1f8dd6 100%);
+$theme-light-dashboard-bg-color: #fbfbfd;
+$theme-light-tooltip-bg-color: #f6f9fb;
+$theme-light-gray-bg: #f6f9fb;
+
+// UI
+$theme-light-blue-light: #147bd1;
+
+// Forms
+$theme-light-input-text-color: #0c466bde;
+$theme-light-input-border-color: rgba(12, 70, 107, 0.6);
+$theme-light-input-icon-color: #0c466b99;
+
+// Main menu
+$theme-light-main-menu-active-btn-color: #89a1b0;
+
+// Cards
+$theme-light-card-left-border-light-blue: #ccd6eb;
+
+// Transactions
+$theme-light-transaction-details-btn-color: #147bd1;
+
+// Chargebacks
+$theme-light-chargebacks-total-background: rgba(211, 226, 236, 0.4);
+
+// Data table
+$theme-light-table-row-hover-color: #eee;
+$theme-light-table-row-even-color: #fff;
+$theme-light-table-row-odd-color: #f5f6f7;
+$theme-light-table-row-hover-color: #eee;
+
+// Scrollbar
+$theme-light-scrollbar-track-color: #d3e2ec66;
+
+// Statuses
+$theme-light-status-success: #679c7b;
+$theme-light-status-failed: #ef6461;
+$theme-light-status-pending: #f2c745;
+$theme-light-status-future: #147bd1;
+$theme-light-status-disabled: #8e8e8e;
+
+// Shield icon colors
+$theme-light-shield-success: #14b8d9;
+$theme-light-shield-fail: #ef6461;

@@ -1,0 +1,23 @@
+@import 'assets/variables/theme';
+$border-radius-default: 5px;
+$border-radius-10: 10px;
+
+$ui-btn-height: 42px;
+$ui-btn-border-radius: $border-radius-default;
+
+$ui-text-field-border-radius: $border-radius-default;
+$ui-text-field-label-font-size: 14px;
+$ui-input-height: 42px;
+$ui-input-border: 1px solid $theme-light-input-border-color;
+$ui-input-icon-color: $theme-light-input-icon-color;
+// TODO: find a way to fix floating label when scale is different from default 0.75
+// BUG: vuetify/src/components/VTextField/VTextField.ts:498 functions setLabelWidth
+$text-field-outlined-active-label-scale: 0.8571;
+$text-field-outlined-label-position-x: 12px;
+$text-field-outlined-label-position-y: -20px !default;
+
+// Tables
+$data-table-header-font-size: 12px;
+$data-table-header-font-weight: 400;
+$data-table-body-font-size: 14px;
+$data-table-body-font-weight: 300;

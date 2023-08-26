@@ -129,6 +129,8 @@ dev-describe-deployment:
 dev-describe-tasks:
 	kubectl describe pod --namespace=$(NAMESPACE) -l app=$(APP)
 
+dev-describe-telepresence:
+	kubectl describe pod --namespace=ambassador -l app=traffic-manager
 # ------------------------------------------------------------------------------
 
 dev-logs-db:
@@ -151,6 +153,12 @@ pgcli:
 
 liveness-local:
 	curl -il http://localhost:3000/v1/liveness
+
+test-tasks:
+	curl -il http://$(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:3000/tasks
+
+test-tasks-post:
+	curl -X POST http://$(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:3000/new-task -d '{"Name": "asdsdsd"}'
 
 liveness:
 	curl -il http://$(SERVICE_NAME).$(NAMESPACE).svc.cluster.local:3000/v1/liveness
