@@ -30,7 +30,7 @@ export default {
   methods: {
     getTasks() {
       this.$axios
-        .get(`http://tasks-api.tasks-system.svc.cluster.local:3000/tasks`)
+        .get(`tasks`)
         .then((res) => {
           this.tasks = res.data.items
         })

@@ -49,7 +49,6 @@ dev-docker:
 	docker pull $(ALPINE)
 	docker pull $(KIND)
 	docker pull $(POSTGRES)
-	docker pull $(TELEPRESENCE)
 
 # ==============================================================================
 # Building containers

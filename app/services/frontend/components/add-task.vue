@@ -115,7 +115,7 @@ export default {
         }
 
         this.$axios({
-          url: 'http://tasks-api.tasks-system.svc.cluster.local:3000/tasks',
+          url: 'tasks',
           data,
           method: 'POST',
         })
